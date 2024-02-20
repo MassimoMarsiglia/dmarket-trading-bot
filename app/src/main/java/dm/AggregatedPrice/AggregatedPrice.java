@@ -37,7 +37,7 @@ public class AggregatedPrice  {
                 break;
             }
         }
-        
+
         double tmp = offers.getBestPriceAsDouble()*fee;
 
         percent = tmp/orders.getBestPriceAsDouble();
@@ -56,7 +56,7 @@ public class AggregatedPrice  {
     }
 
     public Price getOrder() {
-        return orders;
+        return this.orders;
     }
 
     public Price getOffers() {
