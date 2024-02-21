@@ -24,7 +24,6 @@ public class AggregatedPrice  {
         this.marketHashName = marketHashName;
         this.offers = offers;
         this.orders = orders;
-        this.percent = percent;
     }
 
     public void calculateProfit(Desired desired){

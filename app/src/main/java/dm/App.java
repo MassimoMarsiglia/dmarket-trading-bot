@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import dm.DesiredItems.Item;
-
+import dm.Targets.TargetCreater;
 import dm.Targets.TargetFetcher;
+import dm.Targets.TargetUpdater;
 import dm.AggregatedPrice.AggregatedPriceFetcher;
 import dm.DesiredItems.Desired;
 import dm.Fees.FeeFetcher;
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.io.FileInputStream;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         // URL and headers
 
         String filePath = "C:\\Users\\marsi\\dm\\app\\src\\main\\resources\\config.properties";
@@ -39,6 +40,13 @@ public class App {
         desiredItems.add(new Item("★ Shadow Daggers | Black Laminate (Minimal Wear)", 1));
         Desired desired = new Desired(desiredItems);
 
+        TargetFetcher targetFetcher = TargetFetcher.getInstance();
+        targetFetcher.updateTargetList();
+
+        TargetCreater targetCreater = new TargetCreater(authToken);
+        
+        TargetUpdater targetUpdater = new TargetUpdater(minProfit, authToken);
+
         FeeFetcher feeFetcher = FeeFetcher.getInstance();
         feeFetcher.getFees(desired);
 
@@ -47,11 +55,12 @@ public class App {
         aggregatedPriceFetcher.updateAggregatedPrices(authToken);
         aggregatedPriceFetcher.updateProfitPercent(authToken);
         System.out.println(aggregatedPriceFetcher.getAggregatedPrices());
+
+        targetUpdater.deleteUnProfitableTargets();
         
         //System.out.println(desired.toString());
 
-        //TargetFetcher targetFetcher = TargetFetcher.getInstance();
-        //targetFetcher.updateTargetList();
+
 
         //FeeFetcher feeFetcher = FeeFetcher.getInstance();
         //feeFetcher.updateFees();
