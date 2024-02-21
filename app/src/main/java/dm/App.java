@@ -34,7 +34,7 @@ public class App {
         List<Item> desiredItems = new ArrayList<>();
 
         desiredItems.add(new Item("Sticker Capsule 2", 2));
-        desiredItems.add(new Item("★ Falchion Knife | Freehand (Minimal Wear)", 2));
+        desiredItems.add(new Item("★ Hydra Gloves | Rattler (Field-Tested)", 2));
         desiredItems.add(new Item("★ Ursus Knife | Safari Mesh (Field-Tested)", 1));
         desiredItems.add(new Item("★ Nomad Knife | Scorched (Field-Tested)", 3));
         desiredItems.add(new Item("★ Shadow Daggers | Black Laminate (Minimal Wear)", 1));
@@ -45,7 +45,7 @@ public class App {
 
         TargetCreater targetCreater = new TargetCreater(authToken);
         
-        TargetUpdater targetUpdater = new TargetUpdater(minProfit, authToken);
+        TargetUpdater targetUpdater = new TargetUpdater(minProfit, authToken, targetCreater);
 
         FeeFetcher feeFetcher = FeeFetcher.getInstance();
         feeFetcher.getFees(desired);
@@ -58,6 +58,8 @@ public class App {
 
         targetUpdater.deleteUnProfitableTargets();
         
+        targetUpdater.createProfitableTargets();
+
         //System.out.println(desired.toString());
 
 

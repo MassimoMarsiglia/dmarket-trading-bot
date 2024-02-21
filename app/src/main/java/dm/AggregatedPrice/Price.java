@@ -2,7 +2,7 @@ package dm.AggregatedPrice;
 
 import com.google.gson.annotations.SerializedName;
 
-class Price {
+public class Price {
 
     @SerializedName("BestPrice")
     private String bestPrice;

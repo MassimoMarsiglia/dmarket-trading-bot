@@ -16,20 +16,31 @@ public class TargetUpdater {
     double minProfit;
     String authorizationHeader;
     Desired desired;
+    TargetCreater targetCreater;
 
-    public TargetUpdater(double profit, String authToken) {
+    public TargetUpdater(double profit, String authToken, TargetCreater target) {
         minProfit = profit;
         authorizationHeader = authToken;
+        targetCreater = target;
     }
 
-    public void createProfitableTargets() throws IOException {
+    public void createProfitableTargets() throws IOException, InterruptedException {
         aggregatedPriceFetcher.updateAggregatedPrices(authorizationHeader);
 
         for(AggregatedPrice aggregatedPrice:aggregatedPriceFetcher.getAggregatedPrices()) {
             if(aggregatedPrice.getPercent() >= minProfit) {
-
+                for(Target targeted : targetFetcher.getTargets()){
+                    if(!targeted.getName().equals(aggregatedPrice.getMarketHashName())){
+                        targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble());
+                    }
+                    else{
+                        if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble() && targeted.getCreationTime() > targeted.getCreationTime()+900){ //+900 because of 15mins
+                            deleteTargets(targeted.getTargetID());
+                            targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
+                        }
+                    }
+                }
             }
-
         }
     }
 

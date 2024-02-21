@@ -1,4 +1,6 @@
 package dm.Targets;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -16,11 +18,22 @@ public class Target {
     @SerializedName("TargetID")
     private String targetID;
 
+    private long creationTime;
+
     public Target() {
         this.name = name;
         this.price = price;
         //this.activity = activity;
         this.targetID = targetID;
+        this.creationTime = creationTime;
+    }
+
+    public void updateCreationTime(){
+        this.creationTime = System.currentTimeMillis()/1000;
+    }
+
+    public long getCreationTime(){
+        return creationTime;
     }
 
     public String getTargetID(){

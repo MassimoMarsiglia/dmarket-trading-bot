@@ -11,6 +11,10 @@ public class Price {
         return price;
     }
 
+    public double getPriceAsDouble(){
+        return Double.parseDouble(price);
+    }
+
     @Override
     public String toString(){
         return price;
