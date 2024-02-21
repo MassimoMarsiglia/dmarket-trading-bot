@@ -30,15 +30,18 @@ public class TargetUpdater {
         aggregatedPriceFetcher.updateProfitPercent(authorizationHeader);
 
         for(AggregatedPrice aggregatedPrice:aggregatedPriceFetcher.getAggregatedPrices()) {
+            boolean found = false;
             if(aggregatedPrice.getPercent() >= minProfit) {
-                boolean found = false;
                 for(Target targeted : targetFetcher.getTargets()){
-                    if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble() && targeted.getCreationTime() > targeted.getCreationTime()+900){ //+900 because of 15mins
-                        deleteTargets(targeted.getTargetID());
-                        targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
+                    if(targeted.getName().equals(aggregatedPrice.getMarketHashName())){
                         found = true;
-                        break;
-                        
+                        if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble()){ 
+                            if(System.currentTimeMillis()/1000 > targeted.getCreationTime()+900){    //+900 because of 15mins
+                            deleteTargets(targeted.getTargetID());
+                            targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
+                            break;
+                            }
+                        }
                     }
                 }
                 if(!found) {

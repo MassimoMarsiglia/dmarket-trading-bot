@@ -71,8 +71,8 @@ public class TargetFetcher {
             boolean found = false;
             for (Target target3 : targets) {
                 if (target3.getName().equals(target.getName())) {
-                    //target3.setPrice(target.getPrice());
-                    //target3.setTargetID(target.getTargetID());
+                    target3.setPrice(target.getPrice());
+                    target3.setTargetID(target.getTargetID());
                     found = true;
                     break;
                 }
