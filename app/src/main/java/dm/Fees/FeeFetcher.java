@@ -25,8 +25,8 @@ public class FeeFetcher {
         return instance;
     }
 
-    public void getFees(Desired desire) throws IOException{
-        updateFees();
+    public void getFees(Desired desire, String authToken) throws IOException{
+        updateFees(authToken);
 
         for(Item items: desire.getItemList()) {
             for(Fee fee : fees) {
@@ -38,10 +38,10 @@ public class FeeFetcher {
         }
     }
     
-    private void updateFees() throws IOException{
+    private void updateFees(String authToken) throws IOException{
         String url = "https://api.dmarket.com/exchange/v1/customized-fees?gameId=a8db&offerType=dmarket&limit=10000&offset=0";
         String acceptHeader = "application/json";
-        String authorizationHeader = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMzI0NDhhMC01NWM3LTQ1YmQtOGRkNi03MjMwNGEzNThmNDIiLCJleHAiOjE3MDg4ODE5NjYsImlhdCI6MTcwNjI4OTk2Niwic2lkIjoiMjhhZDRkNjAtZGI2My00Y2M5LTgwZWUtNzM5ZGFhZGY5NDlhIiwidHlwIjoiYWNjZXNzIiwiaWQiOiIyM2EwYTFhNy1hOWU2LTRiMTItYWE0NC0yMGVkOTMyMmVhYmYiLCJwdmQiOiJtcCIsInBydCI6IjI0MDEiLCJhdHRyaWJ1dGVzIjp7ImFjY291bnRfaWQiOiI3NDkzYTJjMi0wZGZkLTQ3YmMtYTgxZC01ZDBjYjhlZmNhZjYiLCJzYWdhX3dhbGxldF9hZGRyZXNzIjoiMHgzRThmNmZiQzQzMmFGRDI1ZTU0MENGQzdBMjhhRjQ4N2UwYTJEZjA3Iiwid2FsbGV0X2lkIjoiODgxNjI2MGRkMDZiNTlhOGIwNzgwNzYxYTY2MmE4YTIyMTRiMjBkMDlmZDQ4NGU0YTNiZDU3OTNhYmY3NDU5OSJ9fQ.DMPnwZUyW5fwRmVqzC_CSLNgRyuB5D6MURE5Y4WkUFHvXD9fflcfikVT8id-YUv0Mbqjv7Fl3G9JqjbDZeIlsA";
+        String authorizationHeader = authToken;
 
         // Create connection
         URL obj = new URL(url);

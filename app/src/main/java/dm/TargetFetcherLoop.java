@@ -21,7 +21,7 @@ public class TargetFetcherLoop {
             public void run() {
                 // Call targetFetcher.updateTargetList() here
                 try {
-                    targetFetcher.updateTargetList();
+                    targetFetcher.updateTargetList("TargetStatusActive", "s");
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

@@ -11,13 +11,11 @@ public class Item {
     private String name;
     private String encodedName;
     private double fee = 0.9;
-    private int amount;
 
-    public Item(String name, int amount){
+    public Item(String name){
         this.name = name;
         this.encodedName = encode(name);
         this.fee = fee;
-        this.amount = amount;
     }
 
     public String getName(){
@@ -54,7 +52,7 @@ public class Item {
     
     @Override
     public String toString(){
-        return name + " amount:" + String.valueOf(amount) + " fee: " + String.valueOf(fee);
+        return name + " fee: " + String.valueOf(fee);
     }
 
 }

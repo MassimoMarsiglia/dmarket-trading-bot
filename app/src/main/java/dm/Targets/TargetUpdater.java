@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TargetUpdater {
 
@@ -25,20 +27,22 @@ public class TargetUpdater {
     }
 
     public void createProfitableTargets() throws IOException, InterruptedException {
-        aggregatedPriceFetcher.updateAggregatedPrices(authorizationHeader);
+        aggregatedPriceFetcher.updateProfitPercent(authorizationHeader);
 
         for(AggregatedPrice aggregatedPrice:aggregatedPriceFetcher.getAggregatedPrices()) {
             if(aggregatedPrice.getPercent() >= minProfit) {
+                boolean found = false;
                 for(Target targeted : targetFetcher.getTargets()){
-                    if(!targeted.getName().equals(aggregatedPrice.getMarketHashName())){
-                        targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble());
+                    if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble() && targeted.getCreationTime() > targeted.getCreationTime()+900){ //+900 because of 15mins
+                        deleteTargets(targeted.getTargetID());
+                        targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
+                        found = true;
+                        break;
+                        
                     }
-                    else{
-                        if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble() && targeted.getCreationTime() > targeted.getCreationTime()+900){ //+900 because of 15mins
-                            deleteTargets(targeted.getTargetID());
-                            targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
-                        }
-                    }
+                }
+                if(!found) {
+                    targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
                 }
             }
         }
@@ -47,17 +51,41 @@ public class TargetUpdater {
     public void deleteUnProfitableTargets() throws IOException, InterruptedException {
         aggregatedPriceFetcher = aggregatedPriceFetcher.getInstance();
         targetFetcher = targetFetcher.getInstance();
-        for(AggregatedPrice price : aggregatedPriceFetcher.getAggregatedPrices()) {
-            if(price.getPercent() < minProfit){
-                //System.out.println(targetFetcher.getTargets().size());
-                for(Target targets : targetFetcher.getTargets()){
-                    if(price.getMarketHashName().equals(targets.getName())){
-                        System.out.println(targets.getName());
-                        System.out.println(targets.getTargetID());
-                        deleteTargets(targets.getTargetID());
+
+        List<Target> targetsToDelete = new ArrayList<>();
+
+        for (AggregatedPrice price : aggregatedPriceFetcher.getAggregatedPrices()) {
+            if (price.getPercent() < minProfit) {
+                for (Target target : targetFetcher.getTargets()) {
+                    if (price.getMarketHashName().equals(target.getName())) {
+                        // Add the target to the list of targets to delete
+                        targetsToDelete.add(target);
                     }
                 }
             }
+        }
+        
+        // Delete the targets after the iteration is complete
+        for (Target target : targetsToDelete) {
+            System.out.println(target.getName());
+            System.out.println(target.getTargetID());
+            deleteTargets(target.getTargetID());
+        }
+    }
+
+    public void deleteAllTargets() throws IOException, InterruptedException{
+        try {
+            targetFetcher.updateTargetList("TargetStatusActive", authorizationHeader);
+            targetFetcher.updateTargetList("TargetStatusInactive", authorizationHeader);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        };
+        List<Target> targetsCopy = new ArrayList<>(targetFetcher.getTargets());
+
+        // Iterate over the copy
+        for(Target target1: targetsCopy) {
+            deleteTargets(target1.getTargetID());
         }
     }
 

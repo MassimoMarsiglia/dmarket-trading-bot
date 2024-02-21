@@ -2,10 +2,7 @@ package dm.AggregatedPrice;
 
 import com.google.gson.annotations.SerializedName;
 
-import dm.Fees.FeeFetcher;
 import dm.DesiredItems.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AggregatedPrice  {
 

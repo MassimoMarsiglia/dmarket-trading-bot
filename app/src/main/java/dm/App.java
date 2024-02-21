@@ -10,6 +10,10 @@ import dm.Targets.TargetUpdater;
 import dm.AggregatedPrice.AggregatedPriceFetcher;
 import dm.DesiredItems.Desired;
 import dm.Fees.FeeFetcher;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -30,35 +34,68 @@ public class App {
         Double minProfit = Double.parseDouble(pros.getProperty("minProfit"));
         int checkFrequency = Integer.parseInt(pros.getProperty("checkFrequency"));
 
+        String filePathSkins = "app\\src\\main\\resources\\skins.txt";
 
         List<Item> desiredItems = new ArrayList<>();
 
-        desiredItems.add(new Item("Sticker Capsule 2", 2));
-        desiredItems.add(new Item("★ Hydra Gloves | Rattler (Field-Tested)", 2));
-        desiredItems.add(new Item("★ Ursus Knife | Safari Mesh (Field-Tested)", 1));
-        desiredItems.add(new Item("★ Nomad Knife | Scorched (Field-Tested)", 3));
-        desiredItems.add(new Item("★ Shadow Daggers | Black Laminate (Minimal Wear)", 1));
+        try (FileInputStream fis = new FileInputStream(filePathSkins);
+            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            // Read each line from the file
+            while ((line = br.readLine()) != null) {
+                // Split the line by comma
+                String[] parts = line.split(",");
+                // Parse name and age
+                String name = parts[0].trim();
+                // Create a Person object and add it to the list
+                desiredItems.add(new Item(name));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //desiredItems.add(new Item("★ Moto Gloves | Turtle (Battle-Scarred)"));
+        //desiredItems.add(new Item("★ Hydra Gloves | Rattler (Field-Tested)"));
+        //desiredItems.add(new Item("★ Ursus Knife | Safari Mesh (Field-Tested)"));
+        //desiredItems.add(new Item("★ Nomad Knife | Scorched (Field-Tested)"));
+        //desiredItems.add(new Item("★ Shadow Daggers | Black Laminate (Minimal Wear)"));
         Desired desired = new Desired(desiredItems);
 
+        System.out.println(desired.getItemList());
+
         TargetFetcher targetFetcher = TargetFetcher.getInstance();
-        targetFetcher.updateTargetList();
+        targetFetcher.updateTargetList("TargetStatusActive", authToken);
 
         TargetCreater targetCreater = new TargetCreater(authToken);
         
         TargetUpdater targetUpdater = new TargetUpdater(minProfit, authToken, targetCreater);
 
         FeeFetcher feeFetcher = FeeFetcher.getInstance();
-        feeFetcher.getFees(desired);
-
+        feeFetcher.getFees(desired, authToken);
         AggregatedPriceFetcher aggregatedPriceFetcher = AggregatedPriceFetcher.getInstance();
         aggregatedPriceFetcher.setDesired(desired);
-        aggregatedPriceFetcher.updateAggregatedPrices(authToken);
-        aggregatedPriceFetcher.updateProfitPercent(authToken);
-        System.out.println(aggregatedPriceFetcher.getAggregatedPrices());
 
-        targetUpdater.deleteUnProfitableTargets();
+        while(true){
+            int counter = 0;
+            aggregatedPriceFetcher.updateProfitPercent(authToken);
         
-        targetUpdater.createProfitableTargets();
+            targetUpdater.deleteUnProfitableTargets();
+            counter++;
+            targetUpdater.createProfitableTargets();
+
+            if (counter == 60) {
+                targetUpdater.deleteAllTargets();
+                counter = 0;
+                synchronized (App.class) {
+                    App.class.wait(180000);
+                }
+            }
+            synchronized (App.class) {
+                App.class.wait(60000);
+            }
+        }
+        
 
         //System.out.println(desired.toString());
 

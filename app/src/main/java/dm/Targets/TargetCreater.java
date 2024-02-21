@@ -59,7 +59,7 @@ public class TargetCreater {
 
         // Print response
         if(response.statusCode()==200){
-            targetFetcher.updateTargetList();
+            targetFetcher.updateTargetList("TargetStatusActive", authorizationHeader);
         }
 
         System.out.println("Response Code: " + response.statusCode());

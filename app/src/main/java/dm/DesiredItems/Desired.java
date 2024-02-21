@@ -2,8 +2,6 @@ package dm.DesiredItems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 public class Desired {
     private List<Item> items = new ArrayList<>();
