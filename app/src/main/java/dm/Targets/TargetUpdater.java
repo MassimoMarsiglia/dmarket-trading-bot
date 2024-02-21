@@ -37,9 +37,9 @@ public class TargetUpdater {
                         found = true;
                         if(targeted.getPrice().getPriceAsDouble() < aggregatedPrice.getOrder().getBestPriceAsDouble()){ 
                             if(System.currentTimeMillis()/1000 > targeted.getCreationTime()+900){    //+900 because of 15mins
-                            deleteTargets(targeted.getTargetID());
-                            targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
-                            break;
+                                deleteTargets(targeted.getTargetID());
+                                targetCreater.createTarget(aggregatedPrice.getMarketHashName(), aggregatedPrice.getOrder().getBestPriceAsDouble()+0.01);
+                                break;
                             }
                         }
                     }

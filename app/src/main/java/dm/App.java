@@ -73,12 +73,15 @@ public class App {
         feeFetcher.getFees(desired, authToken);
 
         System.out.println(desired.getItemList());
-        
+
         AggregatedPriceFetcher aggregatedPriceFetcher = AggregatedPriceFetcher.getInstance();
         aggregatedPriceFetcher.setDesired(desired);
 
+        int counter = 0;
+        
         while(true){
-            int counter = 0;
+            System.out.println(counter);
+            
             aggregatedPriceFetcher.updateProfitPercent(authToken);
         
             targetUpdater.deleteUnProfitableTargets();
